@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Antes de abrir tu regalo</title>
+<style>
+  :root{
+    --azul-halo: rgba(120,180,255,.45);
+    --papel: #f6f8fc;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;background:#03060f}
+  body{
+    font-family: Georgia, "Times New Roman", "Iowan Old Style", serif;
+    color:#eaf3ff;
+    -webkit-font-smoothing:antialiased;
+  }
+  #c{position:fixed;inset:0;display:block;width:100%;height:100%}
+
+  .vineta{
+    position:fixed;inset:0;pointer-events:none;z-index:2;
+    background:radial-gradient(120% 90% at 50% 45%, transparent 35%, rgba(2,5,14,.55) 100%);
+  }
+  .ui{
+    position:fixed;inset:0;z-index:3;display:flex;flex-direction:column;
+    align-items:center;justify-content:flex-start;pointer-events:none;
+    padding:6vh 24px 0;
+  }
+  .sobre{
+    text-align:center;max-width:min(92vw,760px);
+    animation:sube 1.8s cubic-bezier(.16,1,.3,1) .5s backwards;
+  }
+  .lazos{
+    font-size:clamp(11px,1.6vw,14px);letter-spacing:.55em;text-transform:uppercase;
+    color:#9dc4f5;opacity:.85;margin-bottom:14px;text-indent:.55em;
+  }
+  .nombre{
+    font-size:clamp(38px,8.4vw,86px);line-height:1.02;font-weight:400;
+    letter-spacing:.02em;
+    background:linear-gradient(180deg,#ffffff 0%,#dcecff 42%,#8fc0ff 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 26px var(--azul-halo)) drop-shadow(0 2px 3px rgba(0,0,0,.45));
+  }
+  .dedicatoria{
+    font-size:clamp(14px,2.3vw,20px);line-height:1.72;font-style:italic;
+    color:#d6e7ff;text-shadow:0 2px 18px rgba(8,20,48,.9),0 1px 2px rgba(0,0,0,.6);
+  }
+  .fecha{
+    margin-top:20px;font-size:clamp(10px,1.5vw,12.5px);letter-spacing:.42em;
+    text-transform:uppercase;color:#8fb4e8;text-indent:.42em;
+  }
+  .pista{
+    position:fixed;left:0;right:0;bottom:22px;z-index:4;text-align:center;
+    font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+    color:rgba(190,215,255,.5);pointer-events:none;
+    animation:respira 4.5s ease-in-out infinite;
+  }
+
+  /* ---------- las fotos ---------- */
+  .polaroid{
+    position:fixed;z-index:5;margin:0;cursor:pointer;
+    background:var(--papel);padding:9px 9px 0;border-radius:3px;
+    box-shadow:0 18px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.5),
+               0 0 34px rgba(110,170,255,.28);
+    transition:box-shadow .3s, transform .3s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .polaroid .pol-foto{overflow:hidden;border-radius:2px;background:#dfe6ef;line-height:0}
+  .polaroid .pol-foto img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    filter:contrast(1.04) saturate(1.03);
+  }
+  .polaroid figcaption{ text-align:center;padding:8px 4px 10px;color:#1b2b45; }
+  .polaroid .pol-titulo{display:block;font-style:italic;font-size:clamp(13px,1.6vw,16px);line-height:1.25}
+  .polaroid .pol-sub{
+    display:block;margin-top:3px;font-family:inherit;
+    font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:#6b7f9c;text-indent:.26em;
+  }
+  .polaroid:hover{box-shadow:0 24px 54px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.6),0 0 48px rgba(130,185,255,.45)}
+
+  /* la foto grande, a la izquierda */
+  .polaroid.foto-a{
+    left:clamp(14px,3.4vw,44px);bottom:clamp(78px,11vh,120px);
+    width:clamp(132px,16vw,196px);
+    transform:rotate(-3.2deg);
+    animation:entraFoto 1.5s cubic-bezier(.16,1,.3,1) 1.4s backwards,
+              flotaA 7s ease-in-out 3s infinite;
+  }
+  .polaroid.foto-a .pol-foto{aspect-ratio:3/4}
+  .polaroid.foto-a:hover{transform:rotate(-1.4deg) scale(1.035)}
+
+  /* la segunda, mas pequena y al lado contrario */
+  .polaroid.foto-b{
+    right:clamp(14px,3.6vw,48px);bottom:clamp(58px,8.5vh,96px);
+    width:clamp(96px,11.5vw,142px);
+    transform:rotate(2.6deg);
+    animation:entraFoto 1.5s cubic-bezier(.16,1,.3,1) 2.1s backwards,
+              flotaB 8.4s ease-in-out 3.6s infinite;
+  }
+  .polaroid.foto-b .pol-foto{aspect-ratio:3/4}
+  .polaroid.foto-b:hover{transform:rotate(1deg) scale(1.04)}
+  .polaroid .goma{
+    position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+    width:46px;height:15px;background:rgba(226,238,255,.32);
+    border-left:1px solid rgba(255,255,255,.28);border-right:1px solid rgba(120,150,190,.22);
+    filter:blur(.4px);pointer-events:none;
+  }
+
+  @keyframes entraFoto{from{opacity:0;transform:rotate(-14deg) translateY(46px) scale(.86)}}
+  @keyframes flotaA{0%,100%{rotate:-3.2deg}50%{rotate:-1.7deg}}
+  @keyframes flotaB{0%,100%{rotate:2.6deg}50%{rotate:1.3deg}}
+
+  .lupa{
+    position:fixed;inset:0;z-index:40;display:none;place-items:center;
+    background:rgba(3,7,18,.9);backdrop-filter:blur(8px);cursor:zoom-out;padding:5vh 5vw;
+  }
+  .lupa.abierto{display:grid;animation:aparece .35s ease both}
+  .lupa img{
+    max-width:min(92vw,620px);max-height:76vh;border-radius:4px;
+    box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 0 8px var(--papel),0 0 60px rgba(120,180,255,.3);
+    transform:rotate(-1deg);
+  }
+  .lupa-pie{
+    margin-top:18px;font-style:italic;font-size:clamp(14px,2.2vw,19px);
+    color:#dceaff;text-shadow:0 2px 14px rgba(0,0,0,.7);
+  }
+  .lupa-pie span{
+    display:block;margin-top:7px;font-style:normal;font-size:9.5px;
+    letter-spacing:.3em;text-transform:uppercase;color:rgba(160,200,255,.6);text-indent:.3em;
+  }
+  @keyframes aparece{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+
+  /* ---------- la cerradura ---------- */
+  .llave{
+    position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+    padding:24px;overflow:hidden;
+  }
+  .llave-fondo{
+    position:absolute;inset:-8%;
+    background:url(carro.jpg) center/cover no-repeat;
+    filter:blur(34px) saturate(.3) brightness(.42);
+    transform:scale(1.1);
+    animation:deriva 26s ease-in-out infinite alternate;
+  }
+  @keyframes deriva{from{transform:scale(1.1) translate(-1.5%,1%)}to{transform:scale(1.18) translate(1.5%,-1.5%)}}
+  .llave-velo{
+    position:absolute;inset:0;
+    background:
+      radial-gradient(90% 70% at 50% 42%, rgba(24,60,120,.55), rgba(3,7,18,.94) 72%),
+      linear-gradient(180deg, rgba(4,10,24,.9), rgba(2,5,12,.97));
+  }
+  .llave-caja{
+    position:relative;text-align:center;max-width:min(94vw,540px);
+    animation:llaveEntra 1.4s cubic-bezier(.16,1,.3,1) backwards;
+  }
+  @keyframes llaveEntra{from{opacity:0;transform:translateY(22px) scale(.97)}}
+  .candado{width:clamp(56px,8vw,76px);height:auto;color:#9dc4f5;display:block;margin:0 auto 26px;overflow:visible;
+    filter:drop-shadow(0 0 16px rgba(120,180,255,.5))}
+  .candado .aro{transform-origin:38px 30px;transition:transform .7s cubic-bezier(.5,-0.3,.3,1.4)}
+  .llave-intro{
+    font-size:clamp(10px,1.5vw,12.5px);letter-spacing:.46em;text-transform:uppercase;
+    color:#8fb4e8;text-indent:.46em;margin-bottom:16px;
+  }
+  .llave-pregunta{
+    font-size:clamp(26px,5.4vw,46px);font-weight:400;line-height:1.16;
+    background:linear-gradient(180deg,#ffffff,#a8ccff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 22px rgba(120,180,255,.35));
+  }
+  .llave-sub{
+    margin-top:14px;font-style:italic;font-size:clamp(13px,2.1vw,16px);
+    color:rgba(190,215,255,.62);
+  }
+  .llave-form{margin-top:34px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .llave-form input{
+    width:min(78vw,232px);background:rgba(6,14,32,.72);border:1px solid rgba(150,195,255,.3);
+    border-radius:12px;color:#eaf3ff;font-family:inherit;font-size:20px;letter-spacing:.14em;
+    text-align:center;padding:13px 16px;transition:.25s;
+  }
+  .llave-form input::placeholder{color:rgba(150,185,240,.42);letter-spacing:.08em;font-size:15px}
+  .llave-form input:focus{outline:none;border-color:#8fc0ff;box-shadow:0 0 0 4px rgba(120,175,255,.16),0 0 26px rgba(120,180,255,.3)}
+  .llave-form input.malo{border-color:#ff9a9a;box-shadow:0 0 0 4px rgba(255,120,120,.14);animation:tembla .45s}
+  @keyframes tembla{10%,90%{transform:translateX(-2px)}30%,70%{transform:translateX(5px)}50%{transform:translateX(-6px)}}
+  .llave-btn{
+    cursor:pointer;border:1px solid rgba(160,205,255,.42);background:rgba(40,90,175,.5);
+    color:#eaf3ff;font-family:inherit;font-size:13px;letter-spacing:.3em;text-transform:uppercase;
+    text-indent:.3em;padding:14px 24px;border-radius:12px;transition:.25s;
+  }
+  .llave-btn:hover{background:rgba(70,130,225,.7);border-color:#bcdcff;transform:translateY(-1px);box-shadow:0 10px 30px rgba(40,90,190,.45)}
+  .llave-pista{
+    margin-top:22px;min-height:1.4em;font-size:clamp(11px,1.7vw,13px);letter-spacing:.18em;
+    color:rgba(160,195,245,.6);
+  }
+  .llave-pista.malo{color:#ffb4b4;letter-spacing:.1em}
+  .llave-pista.tinta{color:rgba(190,220,255,.8)}
+
+  .llave.abierta{pointer-events:none}
+  .llave.abierta .llave-caja{animation:sale .95s cubic-bezier(.6,0,.3,1) forwards}
+  .llave.abierta .candado{animation:saltaCandado 1s cubic-bezier(.3,-0.4,.4,1.3) forwards}
+  .llave.abierta .llave-velo{animation:aclara 1.4s ease forwards}
+  .llave.abierta .llave-fondo{animation:seVaa 1.6s ease forwards}
+  @keyframes sale{to{opacity:0;transform:scale(1.16);filter:blur(14px)}}
+  @keyframes saltaCandado{to{transform:translateY(-26px) rotate(-16deg);opacity:0}}
+  @keyframes aclara{to{opacity:0}}
+  @keyframes seVaa{to{opacity:0;filter:blur(60px) brightness(1.6)}}
+
+  @keyframes sube{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  @keyframes respira{0%,100%{opacity:.32}50%{opacity:.8}}
+
+  @media (max-width:560px){
+    .ui{padding-top:4vh}
+    .pista{font-size:10px;bottom:52px;letter-spacing:.16em}
+    .polaroid.foto-a{width:clamp(96px,27vw,124px);bottom:88px;padding:7px 7px 0}
+    .polaroid.foto-b{width:clamp(72px,20vw,96px);bottom:74px;padding:5px 5px 0}
+    .polaroid figcaption{padding:6px 3px 7px}
+    .polaroid .pol-sub{font-size:7.5px;letter-spacing:.2em}
+    .polaroid .goma{width:32px;height:11px;top:-7px}
+  }
+  @media (max-width:380px){
+    .polaroid.foto-b{display:none}
+  }
+  @media (max-height:520px){
+    .polaroid.foto-a{width:88px;bottom:60px}
+    .polaroid.foto-b{width:70px;bottom:52px}
+    .llave-form{margin-top:20px}
+    .candado{margin-bottom:14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .sobre,.llave-caja{animation-duration:.01s}
+    .polaroid{animation:entraFoto .01s forwards}
+    .llave-fondo{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<audio id="musica" src="luna.mp3" loop preload="auto"></audio>
+
+<div class="llave" id="llave">
+  <div class="llave-fondo"></div>
+  <div class="llave-velo"></div>
+  <div class="llave-caja">
+    <svg class="candado" viewBox="0 0 76 88" fill="none" aria-hidden="true">
+      <g class="aro">
+        <path d="M22 40V28a16 16 0 0 1 32 0v12" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+      </g>
+      <rect x="13" y="38" width="50" height="40" rx="9" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="4"/>
+      <circle cx="38" cy="55" r="5" fill="currentColor"/>
+      <path d="M38 58v9" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+    <p class="llave-intro">antes de recibir tu regalo</p>
+    <h2 class="llave-pregunta">&iquest;cu&aacute;l es nuestra fecha?</h2>
+    <p class="llave-sub">solo la sabes t&uacute;</p>
+    <form class="llave-form" id="formFecha" autocomplete="off" novalidate>
+      <input id="inClave" type="text" inputmode="numeric" placeholder="dd / mm / aaaa" maxlength="10"
+             aria-label="nuestra fecha" spellcheck="false">
+      <button class="llave-btn" type="submit">abrir</button>
+    </form>
+    <p class="llave-pista" id="llavePista">d&iacute;a, mes y a&ntilde;o</p>
+  </div>
+</div>
+
+<canvas id="c"></canvas>
+<div class="vineta"></div>
+
+<div class="ui">
+  <div class="sobre">
+    <div class="lazos">flores azules</div>
+    <h1 class="nombre" id="elNombre">Mi amor</h1>
+    <p class="dedicatoria" id="elTexto">Para ti, que llegaste sin avisar y te quedaste para siempre.</p>
+    <div class="fecha" id="laFecha">30 de septiembre</div>
+  </div>
+</div>
+
+<div class="pista">toca la pantalla para sembrar m&aacute;s flores</div>
+
+<div class="fotos" id="fotos"></div>
+
+<div class="lupa" id="lupa">
+  <img id="lupaImg" src="carro.jpg" alt="">
+  <p class="lupa-pie" id="lupaPie"></p>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+const $ = id => document.getElementById(id);
+const CLAVE = { d:2, m:12, a:2024 };
+
+const CV = $('c');
+const ctx = CV.getContext('2d', { alpha:false });
+const MUS = $('musica');
+
+const CFG = {
+  nombre: 'Mi amor',
+  texto: 'Para ti, que llegaste sin avisar y te quedaste para siempre.',
+  fecha: '30 de septiembre',
+  cantidad: 34,
+  luna: 70,
+  vol: 0.5
+};
+
+/* las dos fotos del regalo. cambialas aqui y en ningun otro sitio */
+const FOTOS = [
+  { clase:'foto-a', src:'kevin.jpg',    titulo:'kevin',    sub:'t&uacute;',                    alt:'kevin' },
+  { clase:'foto-b', src:'tu_carro.jpg', titulo:'tu carro', sub:'el que te gusta',              alt:'tu carro' }
+];
+
+const SETS = [
+  { c0:'#F2F8FF', c1:'#9CC8FF', c2:'#3E7FDC', cen0:'#FFFBEA', cen1:'#E9C25C' },
+  { c0:'#E4EEFF', c1:'#6FA6EC', c2:'#1E4CA8', cen0:'#FFFFFF', cen1:'#A9C9F2' },
+  { c0:'#F3EDFF', c1:'#AE9CF2', c2:'#5B44BC', cen0:'#FFFDF6', cen1:'#CBBBF6' },
+  { c0:'#E9FCFF', c1:'#7FD6EF', c2:'#2A85AA', cen0:'#FFFEEC', cen1:'#8FE0D6' },
+  { c0:'#FFFFFF', c1:'#B9D8FF', c2:'#4E7FC7', cen0:'#FFF8E8', cen1:'#F0D08A' }
+];
+
+/* ---------- "te amo" en 100 idiomas ---------- */
+const AMOR = [
+  ['Español','Te amo'],            ['Inglés','I love you'],
+  ['Portugués','Eu te amo'],       ['Francés',"Je t'aime"],
+  ['Italiano','Ti amo'],           ['Alemán','Ich liebe dich'],
+  ['Holandés','Ik hou van jou'],   ['Afrikáans','Ek het jou lief'],
+  ['Danés','Jeg elsker dig'],      ['Sueco','Jag älskar dig'],
+  ['Noruego','Jeg elsker deg'],    ['Finlandés','Rakastan sinua'],
+  ['Islandés','Ég elska þig'],     ['Irlandés','Tá grá agam'],
+  ['Gaelico escocés','Tha mo ghràdh agam'], ['Gales','Caru dy'],
+  ['Bretonés',"Da c'hall war ho kar"],     ['Gallego','Queroche'],
+  ['Catalán',"T'estimo"],         ['Euskera','Maite zaitut'],
+  ['Asturiano','Te quiero'],['Rumano','Te iubesc'],         ['Polaco','Kocham cię'],
+  ['Checo','Miluji tě'],           ['Eslovaco','Ľúbim ťa'],['Croata','Volim te'],
+  ['Serbio','Volim te'],['Macedonio','Те са сакам'],     ['Ruso','Я тебя люблю'],
+  ['Ucraniano','Я тебе кохаю'],['Húngaro','Szeretlek'],        ['Letón','Es mīlu'],
+  ['Albanés','Të dua'],            ['Griego','Σ’ αγαπώ'],
+  ['Latín','Te amo'],              ['Luxemburgués','Ech haen Di'],
+  ['Maltés','Nisbahni'],           ['Yiddish','Ikh libe dich'],
+  ['Ladino','Te krevo'],           ['Turco','Seni seviyorum'],
+  ['Azerbaiyano','Mənəni sevirəm'],['Kazajo','Men sağın жақсы көремін'],
+  ['Tártaro','Mın xatırıñ küräç'],['Armenio','Ես քեզ սիրում եմ'],
+  ['Georgiano','მიყვარხარ გან'],  ['Japonés','愛してる'],
+  ['Coreano','사랑해'],            ['Chino','我爱你'],
+  ['Cantonés','我愛你'],           ['Tibetano','ང་ལ་དགའ་བ'],
+  ['Tailandés','ฉันรักเธอ'],      ['Vietnamita','Anh yêu em'],
+  ['Indonesio','Aku cinta kamu'], ['Malayo','Saya cintamu'],['Filipino','Mahal kita'],['Bengalí','আমি তোমাকে ভালোবাসি'],
+  ['Hindi','मैं तुमसे प्यार करता हूँ'],   ['Maratí','माझं तुला प्रेम आहे'],
+  ['Tamil','நான் உன்னைக் காதலிக்கிறேன்'],  ['Telugu','నేను నిన్ను ప్రేమిస్తున్నాను'],['Kannada','ನಾನು ನಿನ್ನನ್ನು ಪ್ರೀತಿಸುತ್ತೇನೆ'],
+  ['Sinhala','මම ඔයාට ආදරෙයි'],      ['Nepali','म तिमीलाई माया गर्छु'],
+  ['Urdu','میں تم سے محبت کرتا ہوں'],  ['Persa','دوستت دارم'],
+  ['Kurdo','Ez tu ji heye'],       ['Pashto','زه نړې کې'],
+  ['Árabe','أحبك'],                ['Hebreo','אני אוהב אותך'],
+  ['Amárico','እየምትናለሁ'],         ['Suahili','Nakupenda'],
+  ['Zulú','Ngiyakuthanda'],        ['Xhosa','Ndiyakuthanda'],
+  ['Shona','Ndinokuda'],['Hausa','Na son ka'],           ['Yoruba','Mo nfẹ́ rẹ'],
+  ['Igbo','Ahụ m gi'],             ['Somalí','Wa ku haystaato'],
+  ['Lingala','Mazingi'],           ['Kinyarwanda','Nkuruhora'],
+  ['Malagasy','Ti mahalanao anao'],['Malinke','A ka ta'],
+  ['Wolof','Mbok gi'],             ['Fula','Ina niɓɓu ma'],
+  ['Oromo','Sinuu dhaabbataa'],['Guaraní','Ajogua che'],        ['Quechua','Kantsita rikuni'],
+  ['Aimara','Qun qillhaykita'],    ['Náhuatl','Niyolotl'],
+  ['Maya','In li’ak'],             ['Mapuche','Ina licheof mi'],
+  ['Cherokee','ᏍᎩ ᎠᏓᏙᎯ ᎥᏪ'],        ['Maorí','Ka aroha atu ki a koe'],
+  ['Hawaiiano','Aloha au iā ʻoe'], ['Samoano','Alofa atu iā ʻoe'],
+  ['Tahitiano','Aloha ʻoe'],       ['Esperanto','Mi amas vin'],
+  ['Occitano','Te vòl'],
+  ['Criollo haitiano','Mwen renmen ou'],
+  ['Jamaicano','Mi love yuh']
+];
+
+let W=0, H=0, DPR=1;
+let flores=[], petalos=[], bokeh=[], estrellas=[], palabras=[];
+let abierto=false;
+
+const TAU = Math.PI*2;
+const ahora = () => performance.now();
+let tiempo = 0;
+let viento = 0;
+
+const rnd  = (a,b) => a + Math.random()*(b-a);
+const elig = a => a[(Math.random()*a.length)|0];
+const clamp = (v,a,b) => v<a?a:v>b?b:v;
+const suave = t => t*t*(3-2*t);
+const salida2 = t => 1 - Math.pow(1-t, 3);
+
+function redimensionar(){
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth;
+  H = window.innerHeight;
+  CV.width  = Math.floor(W*DPR);
+  CV.height = Math.floor(H*DPR);
+  CV.style.width  = W+'px';
+  CV.style.height = H+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.imageSmoothingQuality = 'high';
+  crearEstrellas();
+  medirZonaTexto();
+  construirSuelo();
+  sembrar();
+}
+
+function sueloY(x){
+  return H*0.865 + Math.sin(x*0.0031+0.7)*H*0.026 + Math.sin(x*0.0104+2.3)*H*0.012;
+}
+
+function crearEstrellas(){
+  estrellas = [];
+  const n = Math.round((W*H)/9000);
+  for(let i=0;i<n;i++){
+    estrellas.push({
+      x: Math.random()*W,
+      y: Math.random()*H*0.78,
+      r: rnd(0.4,1.5),
+      a: rnd(0.15,0.8),
+      f: rnd(0.4,1.7),
+      p: Math.random()*TAU
+    });
+  }
+}
+
+function pasoActual(){
+  const n = Math.round(clamp(CFG.cantidad*(W<620?0.7:1), 8, 90));
+  return (W*0.96)/n;
+}
+
+/* z = 0 la flor de adelante, 1 la del fondo. Da capas al jardin. */
+const NIEBLA = 0.42;
+
+function nuevaFlor(x, delay, z){
+  if(z === undefined) z = Math.random();
+  const lejos = 1 - 0.34*z;
+  const alto = H*rnd(0.17,0.345)*lejos;
+  const paso = pasoActual();
+  const lado = Math.min(W,H);
+  const banda = clamp((alto/(H*0.28) - 0.61)/0.62, 0, 1);
+  const rMin = Math.max(paso*0.68, lado*0.022);
+  const rMax = Math.max(rMin, Math.min(paso*1.30, lado*0.13));
+  const tamano = clamp(paso*(0.90 + 0.30*banda)*lejos, Math.max(rMin*0.74, lado*0.017), rMax);
+  const tipo = Math.random();
+  const f = {
+    x, z,
+    /* la raiz se apoya en el suelo: solo un pelin de relieve para la
+       profundidad, si no la flor parece flotar */
+    y: sueloY(x) - z*H*0.055 - Math.sin(x*0.0071+1.1)*H*0.010*z,
+    h: alto,
+    size: tamano,
+    tipo: tipo<0.38?0 : tipo<0.66?1 : tipo<0.88?2 : 3,
+    set: elig(SETS),
+    flex: rnd(0.6,1.5),
+    ph: Math.random()*TAU,
+    delay,
+    dur: rnd(1.5,2.6),
+    edad: 0,
+    gir: rnd(0,TAU),
+    mirror: Math.random()<0.5?-1:1,
+    horneada: null,
+    opMin: rnd(0,0.3),
+    matas: Math.random()<0.55 ? 2 + ((Math.random()*2)|0) : 0
+  };
+  f.capa = f.y*10 + f.size;
+  return f;
+}
+
+function sembrar(){
+  flores = [];
+  const n = Math.round(clamp(CFG.cantidad*(W<620?0.7:1), 8, 90));
+  const salto = 5.5/Math.max(1, n);
+  for(let i=0;i<n;i++){
+    const x = W*0.02 + W*0.96*(i + rnd(0.32,0.68))/n;
+    flores.push(nuevaFlor(x, i*salto + rnd(0,0.55), Math.pow(Math.random(), 1.4)*0.92));
+  }
+  ordenar();
+}
+
+function ordenar(){
+  flores.sort((a,b)=> a.capa - b.capa);
+}
+
+function puntaTallo(f, g){
+  const h = f.h*g;
+  const s = viento*24*f.flex*g + Math.sin(tiempo*1.15 + f.ph)*3.4*g;
+  return { x: f.x + s, y: f.y - h };
+}
+
+function quad(a,b,c,t){
+  const m = 1-t;
+  return m*m*a + 2*m*t*b + t*t*c;
+}
+
+function hoja(g, x, y, L, dir, sway, ap){
+  g.save();
+  g.translate(x, y);
+  g.rotate(dir*0.85 + sway*0.05);
+  const grd = g.createLinearGradient(0,0, 0,-L);
+  grd.addColorStop(0, 'rgba(24,58,62,'+(0.9*ap)+')');
+  grd.addColorStop(1, 'rgba(60,128,114,'+(0.8*ap)+')');
+  g.beginPath();
+  g.moveTo(0,0);
+  g.bezierCurveTo(-L*0.36, -L*0.3, -L*0.30, -L*0.82, 0, -L);
+  g.bezierCurveTo(L*0.30, -L*0.82, L*0.36, -L*0.3, 0, 0);
+  g.fillStyle = grd;
+  g.fill();
+  g.restore();
+}
+
+/* lo que hace que una flor este plantada y no flotando:
+   un monticulo de tierra, su sombra de contacto y un par de briznas */
+function raiz(g, f, plantada){
+  const r = f.size*1.5;
+  g.save();
+  g.translate(f.x, f.y);
+
+  // sombra en el suelo
+  const sh = g.createRadialGradient(0, 0, 0, 0, 0, r*1.15);
+  sh.addColorStop(0,   'rgba(3,9,22,'+(0.62*plantada)+')');
+  sh.addColorStop(0.55,'rgba(3,9,22,'+(0.26*plantada)+')');
+  sh.addColorStop(1,   'rgba(3,9,22,0)');
+  g.beginPath();
+  g.ellipse(0, r*0.10, r*1.15, r*0.34, 0, 0, TAU);
+  g.fillStyle = sh;
+  g.fill();
+
+  // tierra levantada alrededor del tallo
+  const su = g.createLinearGradient(0, -r*0.30, 0, r*0.34);
+  su.addColorStop(0,   'rgba(34,68,72,0)');
+  su.addColorStop(0.5, 'rgba(28,60,64,'+(0.42*plantada)+')');
+  su.addColorStop(1,   'rgba(8,18,38,'+(0.55*plantada)+')');
+  g.beginPath();
+  g.ellipse(0, r*0.06, r*0.72, r*0.26, 0, 0, TAU);
+  g.fillStyle = su;
+  g.fill();
+
+  // briznas
+  if(f.matas){
+    g.strokeStyle = 'rgba(42,96,96,'+(0.5*plantada)+')';
+    g.lineWidth = Math.max(0.8, f.size*0.045);
+    g.lineCap = 'round';
+    for(let i=0;i<f.matas;i++){
+      const u = ((i+0.5)/f.matas - 0.5)*1.5;
+      const bx = u*r*0.62;
+      const bl = r*rnd(0.55,1.0);
+      const curva = u*r*0.55 + viento*r*0.25;
+      g.beginPath();
+      g.moveTo(bx, r*0.10);
+      g.quadraticCurveTo(bx + curva*0.4, -bl*0.62, bx + curva, -bl);
+      g.stroke();
+    }
+  }
+  g.restore();
+}
+
+function tallo(g, f, gt, gp){
+  const p = puntaTallo(f, gt);
+  const cx = f.x + (p.x-f.x)*0.12;
+  const cy = f.y - gt*f.h*0.58;
+  const grd = g.createLinearGradient(f.x, f.y, p.x, p.y);
+  grd.addColorStop(0, 'rgba(28,64,66,0.95)');
+  grd.addColorStop(0.55,'rgba(38,92,90,0.95)');
+  grd.addColorStop(1, 'rgba(64,132,120,0.95)');
+  g.beginPath();
+  g.moveTo(f.x, f.y);
+  g.quadraticCurveTo(cx, cy, p.x, p.y);
+  g.lineWidth = Math.max(1.4, f.size*0.075);
+  g.strokeStyle = grd;
+  g.lineCap = 'round';
+  g.stroke();
+  for(let k=0;k<2;k++){
+    const u = 0.32 + k*0.27;
+    hoja(g, quad(f.x,cx,p.x,u), quad(f.y,cy,p.y,u), f.size*0.62, (k?1:-1)*f.mirror, viento*0.5*gt, gp);
+  }
+  return p;
+}
+
+function caminoPetalo(g, len, wid, curve){
+  g.beginPath();
+  g.moveTo(0,0);
+  g.bezierCurveTo(-wid + curve*len*0.30, -len*0.20, -wid*0.72 + curve*len*0.80, -len*0.66, curve*len, -len);
+  g.bezierCurveTo(wid*0.72 + curve*len*0.80, -len*0.66, wid + curve*len*0.30, -len*0.20, 0, 0);
+}
+
+function petalo(g, len, wid, curve, s, ap, brillo){
+  const grd = g.createLinearGradient(0,0, curve*len*0.55, -len);
+  grd.addColorStop(0, s.c2);
+  grd.addColorStop(0.5, s.c1);
+  grd.addColorStop(1, s.c0);
+  caminoPetalo(g, len, wid, curve);
+  g.globalAlpha = ap;
+  g.fillStyle = grd;
+  g.fill();
+  g.globalAlpha = ap*brillo;
+  g.strokeStyle = 'rgba(226,242,255,0.75)';
+  g.lineWidth = Math.max(0.5, len*0.016);
+  g.stroke();
+  g.globalAlpha = 1;
+}
+
+function centro(g, r, s, ap){
+  if(r<0.5) return;
+  const grd = g.createRadialGradient(0,0,0, 0,0,r);
+  grd.addColorStop(0, s.cen0);
+  grd.addColorStop(0.6, s.cen1);
+  grd.addColorStop(1, s.c1);
+  g.beginPath();
+  g.arc(0,0,r,0,TAU);
+  g.globalAlpha = ap;
+  g.fillStyle = grd;
+  g.fill();
+  g.globalAlpha = 1;
+}
+
+function estambres(g, r, ext, n, s, open){
+  if(open < 0.55) return;
+  g.globalAlpha = (open-0.55)/0.45*0.8;
+  g.fillStyle = s.cen0;
+  for(let i=0;i<n;i++){
+    const ang = i/n*TAU + 0.4;
+    g.beginPath();
+    g.arc(Math.cos(ang)*ext*0.82, Math.sin(ang)*ext*0.82, Math.max(0.5, r*0.16), 0, TAU);
+    g.fill();
+  }
+  g.globalAlpha = 1;
+}
+
+function capullo(g, r, ap){
+  const grd = g.createLinearGradient(0, r*0.5, 0, -r*1.5);
+  grd.addColorStop(0,'rgba(28,66,70,'+ap+')');
+  grd.addColorStop(1,'rgba(72,140,128,'+ap+')');
+  g.beginPath();
+  g.moveTo(0, r*0.5);
+  g.bezierCurveTo(-r*0.72, r*0.1, -r*0.55, -r*1.15, 0, -r*1.5);
+  g.bezierCurveTo(r*0.55, -r*1.15, r*0.72, r*0.1, 0, r*0.5);
+  g.fillStyle = grd;
+  g.fill();
+}
+
+function corola(g, f, grow, open){
+  const L = f.size*grow;
+  if(L < 0.6) return;
+  const s = f.set;
+  const chico = f.size < 24 ? 0.72 : 1;
+  g.rotate(f.gir);
+
+  if(f.tipo === 0){
+    const n = 22, ini = (f.opMin*TAU)|0;
+    for(let i=0;i<n;i++){
+      const d = Math.abs((i-ini+n*2)%n);
+      const o = clamp((open - (d/n)*0.30)/0.72, 0, 1.04);
+      if(o<=0) continue;
+      g.save();
+      g.rotate(i*TAU/n*o);
+      petalo(g, L*0.62*o+1, L*0.175*o+0.4, 0.10, s, 0.96, 0.30);
+      g.restore();
+    }
+    centro(g, L*0.20, s, 1);
+    estambres(g, L*0.20, L*0.30, chico<1?14:20, s, open);
+
+  } else if(f.tipo === 1){
+    const anillos = [[14,0.86,0.34,0.13],[11,0.58,0.30,0.20],[8,0.34,0.26,0.30]];
+    for(let a=anillos.length-1; a>=0; a--){
+      const an = anillos[a];
+      const n = Math.max(7, Math.round(an[0]*chico)), esc = an[1], w = an[2], cur = an[3];
+      const o = clamp((open - a*0.13)/0.78, 0, 1.05);
+      if(o<=0) continue;
+      for(let i=0;i<n;i++){
+        g.save();
+        g.rotate(i*TAU/n*o + a*0.34);
+        petalo(g, L*esc*(0.55+0.45*o), L*w*(0.5+0.5*o), cur, s, 0.95, 0.34);
+        g.restore();
+      }
+    }
+    centro(g, L*0.15, s, 0.9);
+
+  } else if(f.tipo === 2){
+    const anillos = [[9,0.94,0.52,0.22],[8,0.68,0.46,0.26],[6,0.42,0.38,0.32]];
+    for(let a=0;a<anillos.length;a++){
+      const an = anillos[a];
+      const n = Math.max(5, Math.round(an[0]*chico)), esc = an[1], w = an[2], cur = an[3];
+      const o = clamp((open - (2-a)*0.14)/0.74, 0, 1.04);
+      if(o<=0) continue;
+      for(let i=0;i<n;i++){
+        g.save();
+        g.rotate(i*TAU/n*o + a*0.55 + f.mirror*a*0.2);
+        petalo(g, L*esc*(0.5+0.5*o), L*w*(0.45+0.55*o), cur*o, s, 0.97, 0.26);
+        g.restore();
+      }
+    }
+    centro(g, L*0.11, s, 0.7);
+
+  } else {
+    const n = 6;
+    for(let i=0;i<n;i++){
+      const fuera = Math.abs(i-2.5)/2.5;
+      const base = (i/(n-1) - 0.5)*1.85;
+      const o = clamp((open - fuera*0.20)/0.78, 0, 1.04);
+      if(o<=0) continue;
+      g.save();
+      g.rotate(-Math.PI/2 + base*(0.18+0.82*o));
+      petalo(g, L*(0.42+0.58*o), L*0.30*(0.5+0.5*o), (0.22+0.22*fuera)*o, s, 0.95, 0.30);
+      g.restore();
+    }
+    centro(g, L*0.15, s, 0.8);
+  }
+}
+
+function halo(g, x, y, r, fuerza){
+  if(fuerza <= 0.01) return;
+  const grd = g.createRadialGradient(x,y,0, x,y,r);
+  grd.addColorStop(0, 'rgba(150,195,255,'+(0.34*fuerza)+')');
+  grd.addColorStop(0.38,'rgba(100,158,255,'+(0.15*fuerza)+')');
+  grd.addColorStop(1, 'rgba(60,110,230,0)');
+  g.beginPath();
+  g.arc(x,y,r,0,TAU);
+  g.fillStyle = grd;
+  g.fill();
+}
+
+function hornear(f){
+  const pad = f.size*1.5;
+  const esc = Math.min(3, DPR*1.6);
+  const c = document.createElement('canvas');
+  c.width = c.height = Math.max(2, Math.ceil(pad*2*esc));
+  const g = c.getContext('2d');
+  g.scale(esc,esc);
+  g.translate(pad,pad);
+  corola(g, f, 1, 1);
+  f.horneada = { c, pad };
+
+  const r = f.size*2.1;
+  const hc = document.createElement('canvas');
+  hc.width = hc.height = Math.max(2, Math.ceil(r*2));
+  const hg = hc.getContext('2d');
+  hg.translate(r, r);
+  halo(hg, 0, 0, f.size*1.9, 1);
+  f.brillo = { c:hc, pad:r };
+}
+
+let sueloSprite = null;
+
+function construirSuelo(){
+  const off = document.createElement('canvas');
+  off.width  = Math.max(1, Math.ceil(W*DPR));
+  off.height = Math.max(1, Math.ceil(H*DPR));
+  const g = off.getContext('2d');
+  g.scale(DPR, DPR);
+  dibSuelo(g);
+  sueloSprite = off;
+}
+
+/* ---------- la luna: a la izquierda, derivando despacio ---------- */
+function lunaReposo(){
+  const angosto = W < 620;
+  const rBase = Math.min(W,H)*0.075;
+  const xBase = angosto ? W*0.21 : W*0.17;
+  const yBase = angosto ? H*0.335 : H*0.255;
+  const z = zonaTexto;
+
+  const cabe = (r, x, y) =>
+    x - r >= 4 && x + r <= W - 4 && y - r >= 4 &&
+    (!z || !(x + r > z.x0 - 6 && x - r < z.x1 + 6 && y + r > z.y0 - 6 && y - r < z.y1 + 6));
+
+  let r = rBase, x = xBase, y = yBase;
+  if(!cabe(r, x, y)){
+    // 1) por debajo de la dedicatoria, si hay cielo
+    if(z){
+      const yBajo = z.y1 + r + 12;
+      if(yBajo + r < sueloY(x) - 8 && cabe(r, xBase, yBajo)) y = yBajo;
+    }
+    // 2) más pegada al borde izquierdo
+    if(!cabe(r, x, y) && z && cabe(r, z.x0 - r - 10, yBase)) x = z.x0 - r - 10;
+    // 3) un poco más pequeña
+    if(!cabe(r, x, y)){ r = rBase*0.68; x = xBase; y = yBase; }
+  }
+  return { x, y, r };
+}
+
+function lunaPos(){
+  const p = lunaReposo();
+  return {
+    x: p.x + Math.sin(tiempo*0.055)*W*0.035,
+    y: p.y + Math.cos(tiempo*0.041 + 1.3)*H*0.022,
+    r: p.r
+  };
+}
+
+function dibCielo(g){
+  const grd = g.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0, '#02040c');
+  grd.addColorStop(0.34,'#061227');
+  grd.addColorStop(0.62,'#0a2247');
+  grd.addColorStop(0.86,'#071a35');
+  grd.addColorStop(1, '#030a18');
+  g.fillStyle = grd;
+  g.fillRect(0,0,W,H);
+
+  const l = CFG.luna/100;
+  const L = lunaPos(), mx = L.x, my = L.y, mr = L.r;
+  const neb = g.createRadialGradient(mx,my,0, mx,my,mr*7);
+  neb.addColorStop(0, 'rgba(190,220,255,'+(0.30*l)+')');
+  neb.addColorStop(0.28,'rgba(120,175,255,'+(0.13*l)+')');
+  neb.addColorStop(1, 'rgba(40,80,180,0)');
+  g.fillStyle = neb;
+  g.beginPath(); g.arc(mx,my,mr*7,0,TAU); g.fill();
+
+  const lbl = g.createRadialGradient(mx-mr*0.25, my-mr*0.25, mr*0.1, mx,my,mr);
+  lbl.addColorStop(0, 'rgba(255,255,255,'+(0.92*l)+')');
+  lbl.addColorStop(0.7,'rgba(226,240,255,'+(0.75*l)+')');
+  lbl.addColorStop(1, 'rgba(198,222,255,'+(0.45*l)+')');
+  g.beginPath(); g.arc(mx,my,mr,0,TAU); g.fillStyle = lbl; g.fill();
+
+  for(const s of estrellas){
+    const brillo = 0.35 + 0.65*Math.abs(Math.sin(tiempo*s.f + s.p));
+    g.globalAlpha = clamp(brillo*s.a*(0.55 + 0.45*l), 0, 1);
+    g.fillStyle = '#dbe9ff';
+    g.beginPath(); g.arc(s.x, s.y, s.r, 0, TAU); g.fill();
+  }
+  g.globalAlpha = 1;
+}
+
+function dibSuelo(g){
+  const bruma = g.createLinearGradient(0, H*0.68, 0, H);
+  bruma.addColorStop(0,'rgba(30,80,150,0)');
+  bruma.addColorStop(0.55,'rgba(26,70,140,0.16)');
+  bruma.addColorStop(1,'rgba(12,30,70,0.05)');
+  g.fillStyle = bruma;
+  g.fillRect(0, H*0.68, W, H*0.32);
+
+  g.beginPath();
+  g.moveTo(0, H+2);
+  for(let x=0;x<=W;x+=8) g.lineTo(x, sueloY(x));
+  g.lineTo(W, H+2);
+  g.closePath();
+  const sg = g.createLinearGradient(0, H*0.78, 0, H);
+  sg.addColorStop(0,'#0a1c3a');
+  sg.addColorStop(0.5,'#06162b');
+  sg.addColorStop(1,'#040c1a');
+  g.fillStyle = sg;
+  g.fill();
+
+  // una franja de cesped por encima de la linea del suelo: asi las raices
+  // de las flores del fondo tienen tierra detras y no parece que floten
+  const cesped = H*0.085;
+  g.beginPath();
+  g.moveTo(0, sueloY(0));
+  for(let x=0;x<=W;x+=8) g.lineTo(x, sueloY(x));
+  for(let x=W;x>=0;x-=8) g.lineTo(x, sueloY(x) - cesped);
+  g.closePath();
+  const cg = g.createLinearGradient(0, H*0.72, 0, H*0.92);
+  cg.addColorStop(0,   'rgba(30,66,104,0)');
+  cg.addColorStop(0.45,'rgba(22,52,86,0.55)');
+  cg.addColorStop(1,   'rgba(10,26,52,0.85)');
+  g.fillStyle = cg;
+  g.fill();
+
+  // charco de luz de luna sobre la tierra
+  g.save();
+  g.beginPath();
+  for(let x=0;x<=W;x+=8) x===0?g.moveTo(x,sueloY(x)):g.lineTo(x,sueloY(x));
+  g.lineTo(W, H+2); g.lineTo(0, H+2);
+  g.closePath();
+  g.clip();
+  g.globalCompositeOperation = 'lighter';
+  const cx = lunaReposo().x, cy = sueloY(cx);
+  const rg = g.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W*0.30, H*0.17));
+  rg.addColorStop(0,   'rgba(126,176,244,0.30)');
+  rg.addColorStop(0.32,'rgba(92,142,222,0.13)');
+  rg.addColorStop(1,   'rgba(62,112,202,0)');
+  g.fillStyle = rg;
+  g.fillRect(0, cy - H*0.06, W, H);
+  g.restore();
+  g.globalCompositeOperation = 'source-over';
+
+  g.beginPath();
+  for(let x=0;x<=W;x+=8) x===0?g.moveTo(x,sueloY(x)):g.lineTo(x,sueloY(x));
+  const eg = g.createLinearGradient(0,0,W,0);
+  eg.addColorStop(0,'rgba(90,160,255,0.05)');
+  eg.addColorStop(0.5,'rgba(140,200,255,0.34)');
+  eg.addColorStop(1,'rgba(90,160,255,0.05)');
+  g.strokeStyle = eg;
+  g.lineWidth = 1.4;
+  g.stroke();
+
+  g.strokeStyle = 'rgba(46,104,110,0.55)';
+  g.lineWidth = 1.1;
+  g.lineCap = 'round';
+  for(let i=0;i<130;i++){
+    const x = ((i*97.31) % 100)/100*W;
+    const b = sueloY(x);
+    const a = -Math.PI/2 + Math.sin(i*1.7)*0.45;
+    const L = 8 + ((i*13.7)%17);
+    g.beginPath();
+    g.moveTo(x, b+2);
+    g.quadraticCurveTo(x + Math.cos(a)*L*0.4, b - L*0.6, x + Math.cos(a)*L*0.9, b - L);
+    g.stroke();
+  }
+}
+
+function dibBokeh(g){
+  for(const b of bokeh){
+    const grd = g.createRadialGradient(b.x,b.y,0, b.x,b.y,b.r);
+    grd.addColorStop(0, 'rgba(180,215,255,'+b.a+')');
+    grd.addColorStop(0.55,'rgba(120,170,255,'+(b.a*0.35)+')');
+    grd.addColorStop(1, 'rgba(90,140,255,0)');
+    g.beginPath(); g.arc(b.x,b.y,b.r,0,TAU); g.fillStyle = grd; g.fill();
+  }
+}
+
+function crearBokeh(){
+  bokeh = [];
+  const n = Math.round(clamp(W/46, 12, 34));
+  for(let i=0;i<n;i++){
+    bokeh.push({ x: Math.random()*W, y: Math.random()*H, r: rnd(6,34), a: rnd(0.05,0.15), v: rnd(4,16), f: rnd(0.2,0.7), p: Math.random()*TAU });
+  }
+}
+
+/* ---------- "te amo" en 100 idiomas, flotando ---------- */
+
+const FUENTE = 'Georgia, "Times New Roman", "Iowan Old Style", serif';
+let rotulo = 0, esperaPalabra = 0.9, zonaTexto = null;
+
+function medirZonaTexto(){
+  const s = document.querySelector('.sobre');
+  if(!s) return;
+  const r = s.getBoundingClientRect();
+  zonaTexto = { x0:r.left-16, y0:r.top-12, x1:r.right+16, y1:r.bottom+14 };
+}
+
+/* una palabra nunca se dibuja encima de la dedicatoria: se apaga del todo
+   y ademas la empujamos hacia el lado mas cercano */
+function Clearancia(p, w, h){
+  if(!zonaTexto) return 1;
+  const x0 = p.x - w*0.5, x1 = p.x + w*0.5;
+  const y0 = p.y - h, y1 = p.y + h*1.9;
+  if(x1 > zonaTexto.x0 && x0 < zonaTexto.x1 && y1 > zonaTexto.y0 && y0 < zonaTexto.y1) return 0;
+  const dx = Math.max(zonaTexto.x0 - x1, 0, x1 - zonaTexto.x1);
+  const dy = Math.max(zonaTexto.y0 - y1, 0, y0 - zonaTexto.y1);
+  return clamp(Math.sqrt(dx*dx + dy*dy)/58, 0.06, 1);
+}
+
+/* el disco de la luna es lo mas claro del cuadro: las palabras se apagan al cruzarlo */
+function sombraLuna(p, w, h){
+  const L = lunaPos();
+  const x0 = p.x - w*0.5, x1 = p.x + w*0.5, y0 = p.y - h, y1 = p.y + h*1.9;
+  const dx = L.x - clamp(L.x, x0, x1);
+  const dy = L.y - clamp(L.y, y0, y1);
+  const d = Math.sqrt(dx*dx + dy*dy);
+  return clamp((d - L.r*0.85) / (L.r*0.95), 0, 1);
+}
+
+/* empuja la palabra fuera de la dedicatoria y del disco de la luna */
+function esquivarZona(p, dt){
+  const z = zonaTexto;
+  if(z){
+    const y0 = p.y - p.tam, y1 = p.y + p.tam*1.9;
+    if(y1 > z.y0 && y0 < z.y1 &&
+       p.x + p.w*0.5 > z.x0 && p.x - p.w*0.5 < z.x1){
+      const centro = (z.x0 + z.x1)*0.5;
+      p.x += (p.x < centro ? -1 : 1) * 165 * dt;
+    }
+  }
+
+  const L = lunaPos();
+  const dx = p.x - L.x, dy = p.y - L.y;
+  const d = Math.sqrt(dx*dx + dy*dy);
+  const alcance = L.r*1.8;
+  if(d < alcance && d > 0.001){
+    const f = 1 - d/alcance;
+    p.x += dx/d * f * 210 * dt;
+    p.y += dy/d * f * 55 * dt;
+  }
+}
+
+/* busca cielo de verdad: a los lados de la dedicatoria, o debajo de ella.
+   si no queda ningun hueco limpio devuelve null y no nace la frase */
+function sitioPara(ancho, tam){
+  const minX = ancho*0.5 + 6, maxX = W - ancho*0.5 - 6;
+  if(minX > maxX) return null;
+
+  const z = zonaTexto;
+  const L = lunaPos();
+
+  const pisaZona = (x, y) => z &&
+    (x + ancho*0.5 > z.x0 - 4 && x - ancho*0.5 < z.x1 + 4) &&
+    (y + tam*1.9 > z.y0 - 4 && y - tam < z.y1 + 4);
+
+  const sobreLuna = (x, y) => {
+    const dx = x - L.x, dy = y - L.y;
+    return Math.sqrt(dx*dx + dy*dy) < L.r*1.8 + Math.max(ancho, tam*2)*0.5;
+  };
+
+  const limpio = (x, y) => !pisaZona(x, y) && !sobreLuna(x, y);
+  const opc = [];
+
+  if(z){
+    const g1 = [6, z.x0 - ancho*0.5 - 8];
+    const g2 = [z.x1 + ancho*0.5 + 8, W - 6 - ancho*0.5];
+    const techo = Math.max(H*0.07, z.y0 - tam*1.4);
+    for(const g of [g1, g2]){
+      if(g[1] - g[0] <= 4) continue;
+      for(let i=0;i<6;i++){
+        const x = rnd(g[0], g[1]), y = rnd(H*0.07, techo);
+        if(limpio(x, y)){ opc.push({ x, y }); break; }
+      }
+    }
+  }
+
+  const bajo = z ? z.y1 + tam*2.2 : H*0.10;
+  const alto = sueloY(W*0.5) - H*0.12;
+  if(alto - bajo > tam*2){
+    for(let i=0;i<8;i++){
+      const x = rnd(minX, maxX), y = rnd(bajo, alto);
+      if(limpio(x, y)){ opc.push({ x, y }); break; }
+    }
+  }
+
+  if(!opc.length) return null;
+  return elig(opc);
+}
+
+function armarPalabra(par, tam, ancho, x, y, vida){
+  return {
+    txt: par[1], lang: par[0], tam: tam, w: ancho,
+    x: x, y: y,
+    vy: rnd(4.5, 10),
+    amp: rnd(8, 26), f: rnd(0.25, 0.7), p: Math.random()*TAU,
+    vida: vida === undefined ? rnd(8, 12) : vida,
+    edad: 0,
+    pico: rnd(0.46, 0.74)
+  };
+}
+
+function nuevaPalabra(x, y, vida){
+  const par = AMOR[rotulo % AMOR.length];
+  rotulo++;
+  const base = W < 620 ? 12.5 : 16;
+  const tam = base * rnd(0.86, 1.3);
+  ctx.textAlign = 'center';
+  ctx.font = tam.toFixed(1) + 'px ' + FUENTE;
+  const ancho = ctx.measureText(par[1]).width;
+  let px = x, py = y;
+  if(px === undefined){
+    const s = sitioPara(ancho, tam);
+    px = s ? s.x : W*0.5;
+    py = s ? s.y : rnd(H*0.10, H*0.55);
+  }
+  return armarPalabra(par, tam, ancho, px, py, vida);
+}
+
+/* una frase solo aparece si nace con cielo limpio: asi los 100 idiomas
+   llegan a leerse, en vez de depender de la suerte */
+function palabraLibre(){
+  for(let intento=0; intento<6; intento++){
+    const par = AMOR[rotulo % AMOR.length];
+    const tam = (W < 620 ? 12.5 : 16) * rnd(0.86, 1.3);
+    ctx.textAlign = 'center';
+    ctx.font = tam.toFixed(1) + 'px ' + FUENTE;
+    const ancho = ctx.measureText(par[1]).width;
+    const s = sitioPara(ancho, tam);
+    if(!s) continue;
+    rotulo++;
+    return armarPalabra(par, tam, ancho, s.x, s.y);
+  }
+  return null;
+}
+
+function sembrarPalabras(){
+  palabras = [];
+  rotulo = 0;
+  esperaPalabra = 0.7;
+  for(let i=0;i<6;i++){
+    const p = palabraLibre();
+    if(p){ p.edad = p.vida * rnd(0.1, 0.7); palabras.push(p); }
+  }
+}
+
+function soltarPalabras(x, y, n){
+  const techo = W < 620 ? 9 : 14;
+  for(let i=0;i<n;i++){
+    if(palabras.length >= techo) palabras.shift();
+    const p = nuevaPalabra(
+      clamp(x, W*0.08, W*0.92) + rnd(-34, 34),
+      clamp(y, H*0.06, H*0.52) + rnd(-16, 16),
+      rnd(5.5, 8)
+    );
+    p.pico = rnd(0.55, 0.85);
+    palabras.push(p);
+  }
+}
+
+function dibPalabras(g){
+  g.textAlign = 'center';
+  g.textBaseline = 'alphabetic';
+  for(const p of palabras){
+    const u = p.edad / p.vida;
+    if(u > 1) continue;
+    // aparece, se sostiene, se va
+    const aparece = clamp(u / 0.22, 0, 1);
+    const seVa = clamp((1 - u) / 0.34, 0, 1);
+    const base = Math.sin(Math.min(1, aparece) * Math.PI * 0.5);
+    const a = p.pico * base * seVa;
+
+    g.font = p.tam.toFixed(1) + 'px ' + FUENTE;
+    const w = g.measureText(p.txt).width;
+    const alpha = a * Clearancia(p, w, p.tam) * sombraLuna(p, w, p.tam);
+    if(alpha <= 0.012) continue;
+
+    g.save();
+    g.globalAlpha = alpha;
+    g.shadowColor = 'rgba(130,185,255,0.6)';
+    g.shadowBlur = p.tam*1.1;
+    g.fillStyle = '#eaf3ff';
+    g.fillText(p.txt, p.x, p.y);
+
+    g.shadowBlur = 0;
+    g.globalAlpha = alpha * 0.46;
+    g.font = (p.tam*0.50).toFixed(1) + 'px ' + FUENTE;
+    g.fillStyle = '#a8ccff';
+    g.letterSpacing && (g.letterSpacing = '0.16em');
+    g.fillText(p.lang.toUpperCase(), p.x, p.y + p.tam*1.15);
+    g.letterSpacing && (g.letterSpacing = '0px');
+    g.restore();
+  }
+  g.globalAlpha = 1;
+}
+
+function moverPalabras(dt){
+  if(!abierto) return;          // nada de "te amo" antes de abrir el regalo
+  esperaPalabra -= dt;
+  if(esperaPalabra <= 0 && palabras.length < (W < 620 ? 9 : 13)){
+    esperaPalabra = rnd(1.5, 2.6);
+    const p = palabraLibre();
+    if(p) palabras.push(p);
+  }
+  const techo = sueloY(W*0.5) - H*0.03;
+  for(let i=palabras.length-1; i>=0; i--){
+    const p = palabras[i];
+    p.edad += dt;
+    p.y -= p.vy*dt;
+    p.x += Math.sin(tiempo*p.f + p.p)*p.amp*dt;
+    if(p.w <= W-14) p.x = clamp(p.x, p.w*0.5 + 5, W - p.w*0.5 - 5);
+    else p.x = W*0.5;
+    esquivarZona(p, dt);
+    if(p.w <= W-14) p.x = clamp(p.x, p.w*0.5 + 5, W - p.w*0.5 - 5);
+    if(p.edad >= p.vida || p.y < -20 || p.y > techo) palabras.splice(i, 1);
+  }
+}
+
+function nuevoPetalo(inicial){
+  const s = elig(SETS);
+  return {
+    x: Math.random()*W, y: inicial ? Math.random()*H : -20,
+    vy: rnd(16,42), amp: rnd(10,34), f: rnd(0.5,1.3), p: Math.random()*TAU,
+    s: rnd(6,15), rot: Math.random()*TAU, vr: rnd(-0.7,0.7),
+    c0: s.c0, c1: s.c1, a: rnd(0.35,0.8), fondo: Math.random()<0.5
+  };
+}
+
+function crearPetalos(n){ for(let i=0;i<n;i++) petalos.push(nuevoPetalo(true)); }
+
+function dibPetaloHoja(g, p){
+  g.save();
+  g.translate(p.x, p.y);
+  g.rotate(p.rot);
+  const L = p.s, Wd = p.s*0.5;
+  const grd = g.createLinearGradient(0,0,0,-L);
+  grd.addColorStop(0, p.c1);
+  grd.addColorStop(1, p.c0);
+  g.beginPath();
+  g.moveTo(0,0);
+  g.bezierCurveTo(-Wd, -L*0.25, -Wd*0.8, -L*0.78, 0, -L);
+  g.bezierCurveTo(Wd*0.8, -L*0.78, Wd, -L*0.25, 0, 0);
+  g.globalAlpha = p.a;
+  g.fillStyle = grd;
+  g.fill();
+  g.globalAlpha = p.a*0.4;
+  g.strokeStyle = 'rgba(255,255,255,0.8)';
+  g.lineWidth = 0.7;
+  g.stroke();
+  g.restore();
+  g.globalAlpha = 1;
+}
+
+/* una lluvia suave y constante: el jardin nunca se queda sin petalos */
+function lluvia(n, fuerte){
+  soltarPalabras(W*0.5, rnd(H*0.14, H*0.34), fuerte ? Math.max(2, Math.round(n/16)) : 1);
+  for(let i=0;i<n;i++){
+    const p = nuevoPetalo(false);
+    p.y = rnd(-H*0.85, -10);
+    p.vy = fuerte ? rnd(70,160) : rnd(22,58);
+    p.amp = fuerte ? rnd(14,44) : rnd(8,22);
+    if(!fuerte) p.a = p.a*0.8;
+    petalos.push(p);
+  }
+}
+
+function bruma(g){
+  const y0 = sueloY(W*0.5) - H*0.34;
+  const grd = g.createLinearGradient(0, y0, 0, H);
+  grd.addColorStop(0,   'rgba(44,92,168,0.40)');
+  grd.addColorStop(0.45,'rgba(28,64,130,0.22)');
+  grd.addColorStop(1,   'rgba(14,34,78,0.04)');
+  g.fillStyle = grd;
+  g.fillRect(0, y0, W, H-y0);
+}
+
+function pintarFlor(g, f){
+  const u = clamp((f.edad - f.delay)/f.dur, 0, 1);
+  const grow = suave(u);
+  const open = salida2(clamp((u-0.32)/0.68, 0, 1));
+  const escala = f.size * (grow + Math.sin(u*Math.PI)*0.05);
+  if(escala < 0.8) return;
+
+  raiz(g, f, grow);
+
+  const p = tallo(g, f, grow, 0.35 + 0.65*open);
+
+  g.save();
+  g.translate(p.x, p.y);
+  if(f.tipo === 3) g.translate(Math.sin(viento*8*f.flex)*escala*0.10, 0);
+  else g.rotate(viento*0.10*f.flex*grow*0.9);
+
+  if(open < 0.24){
+    g.save();
+    g.globalAlpha = clamp(1 - open/0.24, 0, 1);
+    capullo(g, escala*0.34, 1);
+    g.restore();
+  }
+
+  if(u < 1){
+    halo(g, 0, 0, escala*1.9, open*(0.62+0.38*Math.sin(tiempo*0.8 + f.ph)));
+    corola(g, f, grow, open);
+  } else {
+    if(!f.horneada) hornear(f);
+    const br = f.brillo;
+    const db = br.pad*2*escala/f.size;
+    g.globalAlpha = 0.66 + 0.34*Math.sin(tiempo*0.8 + f.ph);
+    g.drawImage(br.c, -db/2, -db/2, db, db);
+    g.globalAlpha = 1;
+    const h = f.horneada;
+    const d = h.pad*2*escala/f.size;
+    g.drawImage(h.c, -d/2, -d/2, d, d);
+  }
+  g.restore();
+}
+
+function dibujar(dt){
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  dibCielo(ctx);
+  dibBokeh(ctx);
+  moverPalabras(dt);
+  dibPalabras(ctx);
+  if(sueloSprite) ctx.drawImage(sueloSprite, 0, 0, W, H);
+  else dibSuelo(ctx);
+
+  for(const f of flores) f.edad += dt;
+
+  for(const f of flores){
+    if(f.edad < f.delay || f.z <= NIEBLA) continue;
+    pintarFlor(ctx, f);
+  }
+  bruma(ctx);
+  for(const f of flores){
+    if(f.edad < f.delay || f.z > NIEBLA) continue;
+    pintarFlor(ctx, f);
+  }
+
+  for(const b of bokeh){
+    b.y -= b.v*dt;
+    b.x += Math.sin(tiempo*b.f + b.p)*10*dt;
+    if(b.y < -b.r*2){ b.y = H + b.r*2; b.x = Math.random()*W; }
+  }
+  for(const p of petalos){
+    p.y += p.vy*dt;
+    p.x += Math.sin(tiempo*p.f + p.p)*p.amp*dt + viento*22*dt;
+    p.rot += p.vr*dt;
+    if(p.y > H+24){
+      p.y = -24;
+      p.x = Math.random()*W;
+      const s = elig(SETS);
+      p.c0 = s.c0; p.c1 = s.c1; p.s = rnd(6,15); p.a = rnd(0.35,0.8);
+    }
+    if(p.x < -40) p.x = W+40;
+    if(p.x > W+40) p.x = -40;
+  }
+  for(const p of petalos) if(p.fondo) dibPetaloHoja(ctx, p);
+  for(const p of petalos) if(!p.fondo) dibPetaloHoja(ctx, p);
+}
+
+let prev = ahora();
+let proximaRafaga = 4;
+function bucle(){
+  const t = ahora();
+  const dt = Math.min((t - prev)/1000, 0.05);
+  prev = t;
+  tiempo += dt;
+  viento = Math.sin(tiempo*0.35)*0.55 + Math.sin(tiempo*0.9+1.2)*0.25 + Math.sin(tiempo*2.1)*0.08;
+
+  // llueve solo, sin que haya que pulsar nada
+  if(abierto){
+    proximaRafaga -= dt;
+    if(proximaRafaga <= 0){
+      proximaRafaga = rnd(6,13);
+      lluvia(Math.round(clamp(W/34, 5, 14)), false);
+    }
+  }
+
+  dibujar(dt);
+  requestAnimationFrame(bucle);
+}
+
+/* ================= la música ================= */
+
+let fade = null;
+
+function subirVolumen(){
+  if(fade){ clearInterval(fade); fade = null; }
+  const meta = CFG.vol;
+  let v = 0;
+  MUS.volume = 0;
+  fade = setInterval(()=>{
+    v = Math.min(meta, v + meta/16);
+    MUS.volume = v;
+    if(v >= meta){ clearInterval(fade); fade = null; }
+  }, 55);
+}
+
+/* suena sola desde que se abre el regalo */
+function tocar(){
+  const p = MUS.play();
+  if(p && p.then) p.then(subirVolumen).catch(()=>{});
+  else subirVolumen();
+}
+
+/* por si el navegador bloquea el autoplay: reintentamos con el primer
+   toque o tecla, que ya es un gesto permitido */
+function engancharPrimerGesto(){
+  const reintentar = ()=>{
+    if(!MUS.paused) return;
+    tocar();
+  };
+  window.addEventListener('pointerdown', reintentar, { once:true });
+  window.addEventListener('keydown', reintentar, { once:true });
+  window.addEventListener('touchstart', reintentar, { once:true, passive:true });
+}
+
+MUS.addEventListener('error', ()=>{ MUS.pause(); });
+
+/* ================= la cerradura ================= */
+
+let intentos = 0;
+
+function laFechaEsLaClave(v){
+  const bruto = (v||'').trim();
+  if(!bruto) return false;
+  const partes = bruto.split(/[^0-9]+/).filter(p => p.length);
+  let d, m, a;
+  if(partes.length === 3){
+    if(partes[0].length === 4){ a = +partes[0]; m = +partes[1]; d = +partes[2]; }
+    else { d = +partes[0]; m = +partes[1]; a = +partes[2]; }
+  } else {
+    const n = bruto.replace(/[^0-9]/g,'');
+    if(n.length === 8){ d = +n.slice(0,2); m = +n.slice(2,4); a = +n.slice(4,8); }
+    else if(n.length === 6){ d = +n.slice(0,2); m = +n.slice(2,4); a = 2000 + (+n.slice(4,6)); }
+    else return false;
+  }
+  if(a < 100) a += 2000;
+  return d === CLAVE.d && m === CLAVE.m && a === CLAVE.a;
+}
+
+function pistaSegun(intentos){
+  if(intentos <= 1) return 'no es esa, piensa otra vez';
+  if(intentos === 2) return 'pista: día, mes y año — en ese orden';
+  return 'pista: el 2 de diciembre de 2024';
+}
+
+function abrir(){
+  if(abierto) return;
+  abierto = true;
+  const llave = $('llave');
+  llave.classList.add('abierta');
+  document.title = 'Flores azules para ti';
+  sembrar();
+  sembrarPalabras();
+  try{ history.replaceState(null,'','index.html?llave=1'); }catch(e){}
+  setTimeout(()=>{ if(llave.parentNode) llave.parentNode.removeChild(llave); }, 1500);
+  tocar();
+}
+
+$('formFecha').addEventListener('submit', e=>{
+  e.preventDefault();
+  const inp = $('inClave');
+  const pista = $('llavePista');
+  if(laFechaEsLaClave(inp.value)){
+    pista.textContent = 'esa es. ábrelo.';
+    pista.className = 'llave-pista tinta';
+    setTimeout(abrir, 420);
+  } else {
+    intentos++;
+    pista.textContent = pistaSegun(intentos);
+    pista.className = 'llave-pista malo';
+    inp.classList.remove('malo');
+    void inp.offsetWidth;
+    inp.classList.add('malo');
+    inp.select();
+  }
+});
+
+/* ================= el texto ================= */
+
+function pintarTexto(){
+  $('elNombre').textContent = CFG.nombre;
+  $('elTexto').textContent  = CFG.texto;
+  $('laFecha').textContent  = CFG.fecha;
+}
+
+/* ================= las fotos ================= */
+
+const lupa = $('lupa');
+const lupaImg = $('lupaImg');
+const lupaPie = $('lupaPie');
+
+function montarFotos(){
+  const caja = $('fotos');
+  FOTOS.forEach((f, i)=>{
+    const fig = document.createElement('figure');
+    fig.className = 'polaroid ' + f.clase;
+    fig.tabIndex = 0;
+    fig.setAttribute('role', 'button');
+    fig.setAttribute('aria-label', 'ampliar: ' + f.titulo);
+    fig.innerHTML =
+      '<span class="goma"></span>' +
+      '<div class="pol-foto"><img src="' + f.src + '" alt="' + f.alt + '"></div>' +
+      '<figcaption><span class="pol-titulo">' + f.titulo + '</span>' +
+      '<span class="pol-sub">' + f.sub + '</span></figcaption>';
+    const abrir = ()=>{
+      lupaImg.src = f.src;
+      lupaImg.alt = f.alt;
+      lupaPie.innerHTML = f.titulo + '<span>' + f.sub + '</span>';
+      lupa.classList.add('abierto');
+    };
+    fig.addEventListener('click', abrir);
+    fig.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); abrir(); }
+    });
+    caja.appendChild(fig);
+  });
+}
+
+function cerrarLupa(){ lupa.classList.remove('abierto'); }
+lupa.addEventListener('click', cerrarLupa);
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape') cerrarLupa();
+  if(e.key === 'c' || e.key === 'C'){
+    const f = document.querySelector('.polaroid');
+    if(f) f.click();
+  }
+});
+
+/* ================= plantar flores ================= */
+
+function plantar(clientX, clientY){
+  const x = clamp(clientX, 10, W-10);
+  const f = nuevaFlor(x, 0, rnd(0, 0.14));
+  f.dur = rnd(1.2,1.8);
+  f.size = clamp(f.size*1.06, f.size, f.size*1.18);
+  f.capa = f.y*10 + f.size;
+  flores.push(f);
+  ordenar();
+  for(let i=0;i<9;i++){
+    const p = nuevoPetalo(false);
+    p.x = x + rnd(-40,40);
+    p.y = sueloY(x) - rnd(0,70);
+    p.vy = rnd(-10,30);
+    petalos.push(p);
+  }
+  soltarPalabras(x, sueloY(x) - rnd(30,150), 1);
+}
+
+CV.addEventListener('click', e=>{
+  if(!abierto) return;
+  plantar(e.clientX, e.clientY);
+});
+CV.addEventListener('touchstart', e=>{
+  if(!e.touches[0]) return;
+  CV.dataset.tx = e.touches[0].clientX;
+}, {passive:true});
+CV.addEventListener('touchend', e=>{
+  if(!e.changedTouches[0]) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - (+CV.dataset.tx || t.clientX);
+  if(Math.abs(dx) > 22) return;
+  plantar(t.clientX, t.clientY);
+}, {passive:true});
+
+window.addEventListener('resize', ()=>{ redimensionar(); crearBokeh(); });
+
+/* ================= arranque ================= */
+
+pintarTexto();
+montarFotos();
+MUS.volume = 0;
+redimensionar();
+crearBokeh();
+crearPetalos(Math.round(clamp(W/20, 34, 96)));
+engancharPrimerGesto();
+requestAnimationFrame(bucle);
+
+setTimeout(()=>{ const i = $('inClave'); if(i && !abierto) i.focus(); }, 700);
+})();
+</script>
+</body>
+</html>
